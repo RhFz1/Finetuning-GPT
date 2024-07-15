@@ -5,14 +5,15 @@
 '''
 
 import os
+import pandas as pd
 
-# Initially converting the .md files to text files.
-base_path = os.path.join(os.getcwd(), 'data', 'SymptomFiles')
+base_path = os.path.join(os.getcwd(), 'data')
+
+df = pd.DataFrame(columns=['title', 'description'])
 
 for file in os.listdir(base_path):
-    if file.endswith('.md'):
-        with open(f'{base_path}/{file}', 'r', encoding='utf-8') as f:
-            data = f.read()
-        with open(f'{base_path}/{file[:-3]}.txt', 'w', encoding='utf-8') as f:
-            f.write(data)
-        os.remove(f'{base_path}/{file}')
+    with open(os.path.join(base_path, file), 'r') as f:
+        data = f.read()
+        df = pd.concat([pd.DataFrame({'title': [file[:-4]], 'description': [data]}), df], ignore_index=True)
+    os.remove(os.path.join(base_path, file))
+df.to_csv(f'{base_path}/data.csv', index=False)
